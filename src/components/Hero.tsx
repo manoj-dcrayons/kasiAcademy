@@ -13,8 +13,8 @@
           />
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left md:text-center">
-          <div className="animate-fade-in pt-[130px] pb-2 md:py-0">
+        <div className="relative z-10 max-w-7xl pt-[100px] mx-auto px-4 sm:px-6 lg:px-8 text-left md:text-center">
+          <div className="animate-fade-in pb-2 md:py-0">
           {/* <div className='flex justify-center items-center flex-col'> */}
             <h1 className="font-display text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
               Artistry in
