@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import course1_1 from '../assets/courses/course1/course1_1.jpg'
 import course1_2 from '../assets/courses/course1/courses1_2.jpg'
 import course1_3 from '../assets/courses/course1/course1_3.jpg'
@@ -28,7 +28,18 @@ import course11_6 from '../assets/courses/course11/6.jpg'
 import course11_7 from '../assets/courses/course11/7.jpg'
 import course11_8 from '../assets/courses/course11/8.jpg'
 
-const courses = [
+type Course = {
+  title: string;
+  subtitle: string;
+  quickFacts: string[];
+  learn: string[];
+  practice: string[];
+  certification: string[];
+  cta: string;
+  images: string[];
+};
+
+const courses: Course[] = [
   {
     title: '1 Month Professional Makeup Course',
     subtitle: 'Become a professional makeup artist in just 30 days! Master bridal, party, glam, and advanced makeup with expert trainers and hands-on practice.',
@@ -381,27 +392,71 @@ const courses = [
 ];
 
 const Courses = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [imgIndex, setImgIndex] = useState(0);
-  const tabBarRef = useRef(null);
-  const course = courses[activeIndex];
-  const hasImages = course.images && course.images.length > 0;
+  const [carouselIndex, setCarouselIndex] = useState(0); // for carousel
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [modalImgIndex, setModalImgIndex] = useState(0);
 
-  // Slider navigation
-  const prevImg = () => setImgIndex((i) => (i === 0 ? course.images.length - 1 : i - 1));
-  const nextImg = () => setImgIndex((i) => (i === course.images.length - 1 ? 0 : i + 1));
-  
-
-  // Reset image index when course changes
-  React.useEffect(() => { setImgIndex(0); }, [activeIndex]);
-
-  // Tab bar slider logic
-  const scrollTabs = (dir) => {
-    const el = tabBarRef.current;
-    if (!el) return;
-    const scrollAmount = 200;
-    el.scrollBy({ left: dir === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+  // Responsive: 4 on desktop, 2 on tablet, 1 on mobile
+  const getVisibleCount = () => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth >= 1024) return 4;
+      if (window.innerWidth >= 640) return 2;
+    }
+    return 1;
   };
+  const [visibleCount, setVisibleCount] = useState(getVisibleCount());
+  React.useEffect(() => {
+    const handleResize = () => setVisibleCount(getVisibleCount());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const maxIndex = Math.max(0, courses.length - visibleCount);
+  const handlePrev = () => setCarouselIndex((i) => Math.max(0, i - 1));
+  const handleNext = () => setCarouselIndex((i) => Math.min(maxIndex, i + 1));
+
+  // Clamp carouselIndex if visibleCount changes (e.g., on resize)
+  React.useEffect(() => {
+    setCarouselIndex((i) => Math.min(i, maxIndex));
+  }, [visibleCount, maxIndex]);
+
+  // Calculate translateX so last set is always fully visible
+  const getTranslateX = () => {
+    if (carouselIndex === maxIndex) {
+      return (maxIndex * 100) / visibleCount;
+    }
+    return (carouselIndex * 100) / visibleCount;
+  };
+
+  // Auto-slide (autoplay)
+  const [isPaused, setIsPaused] = useState(false);
+  useEffect(() => {
+    if (isPaused) return;
+    let interval: ReturnType<typeof setInterval> | null = setInterval(() => {
+      handleNext();
+    }, 3000);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isPaused, visibleCount, carouselIndex]);
+
+  const openModal = (course: Course) => {
+    setSelectedCourse(course);
+    setModalImgIndex(0);
+    setModalOpen(true);
+  };
+  const closeModal = () => setModalOpen(false);
+
+  // Modal image navigation
+  const prevModalImg = () => setModalImgIndex((i) => {
+    if (!selectedCourse?.images?.length) return 0;
+    return i === 0 ? selectedCourse.images.length - 1 : i - 1;
+  });
+  const nextModalImg = () => setModalImgIndex((i) => {
+    if (!selectedCourse?.images?.length) return 0;
+    return i === selectedCourse.images.length - 1 ? 0 : i + 1;
+  });
 
   return (
     <section id="courses" className="section-padding bg-white">
@@ -414,143 +469,144 @@ const Courses = () => {
             Explore our professional beauty courses designed for every level. Tap a course to see details!
           </p>
         </div>
-        {/* Swiper-like tab bar with arrows, no tooltip, no scrollbar */}
-        <div className="relative mb-8 flex items-center">
+        {/* Carousel */}
+        <div className="relative mb-12">
           <button
-            onClick={() => scrollTabs('left')}
-            className="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-white/80 hover:bg-rose-100 text-rose-500 shadow transition-all absolute left-0 z-10"
-            style={{ top: '50%', transform: 'translateY(-50%)' }}
-            aria-label="Scroll left"
-            tabIndex={-1}
+            onClick={handlePrev}
+            disabled={carouselIndex === 0}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all ${carouselIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+            aria-label="Previous"
           >
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
           </button>
-          <div
-            ref={tabBarRef}
-            className="flex overflow-x-auto no-scrollbar gap-2 py-2 px-1 rounded-lg bg-white/80 shadow-inner w-full mx-8 md:mx-12 no-scrollbar"
-            style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}
-          >
-            {courses.map((c, idx) => (
-              <button
-                key={c.title}
-                onClick={() => setActiveIndex(idx)}
-                className={`whitespace-nowrap px-4 py-2 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 max-w-xs truncate ${
-                  activeIndex === idx
-                    ? 'bg-gradient-to-r from-rose-400 to-pink-500 text-white shadow-lg'
-                    : 'bg-white text-gray-600 hover:text-rose-500 border border-gray-200 hover:border-rose-300'
-                }`}
-                style={{ minWidth: '120px', maxHeight: '40px' }}
-                title={c.title}
-              >
-                {c.title}
-              </button>
-            ))}
+          <div className="overflow-hidden pr-[85px]">
+            <div
+              className="flex gap-2 transition-transform duration-500"
+              style={{ transform: `translateX(-${getTranslateX()}%)` }}
+            >
+              {courses.map((course: Course) => (
+                <div
+                  key={course.title}
+                  className="min-w-0 flex-1 max-w-sm bg-white rounded-2xl shadow-lg card-hover cursor-pointer flex flex-col items-center p-6"
+                  style={{ flex: `0 0 calc(100%/${visibleCount})` }}
+                  onClick={() => openModal(course)}
+                >
+                  <div className="w-full h-40 rounded-xl overflow-hidden mb-4 border-2 border-pink-100 flex items-center justify-center bg-gray-50">
+                    {course.images && course.images.length > 0 ? (
+                      <img src={course.images[0]} alt={course.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-300 text-4xl">?</div>
+                    )}
+                  </div>
+                  <h3 className="font-display text-xl font-bold text-gray-900 text-center mb-2 truncate w-full">{course.title}</h3>
+                  <p className="text-gray-600 text-base text-center line-clamp-2 w-full mb-1">{course.subtitle}</p>
+                </div>
+              ))}
+            </div>
           </div>
           <button
-            onClick={() => scrollTabs('right')}
-            className="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-white/80 hover:bg-rose-100 text-rose-500 shadow transition-all absolute right-0 z-10"
-            style={{ top: '50%', transform: 'translateY(-50%)' }}
-            aria-label="Scroll right"
-            tabIndex={-1}
+            onClick={handleNext}
+            disabled={carouselIndex === maxIndex}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all ${carouselIndex === maxIndex ? 'opacity-50 cursor-not-allowed' : ''}`}
+            aria-label="Next"
           >
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
           </button>
-          {/* Optional fade effect for overflow */}
-          <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-white/90 to-transparent" />
         </div>
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 shadow-lg animate-fade-in">
-          <h3 className="font-display text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            {course.title}
-          </h3>
-          <p className="text-lg text-gray-700 mb-4 font-medium">{course.subtitle}</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-            <div>
-              <h4 className="font-semibold text-rose-500 mb-1">Quick Facts</h4>
-              <ul className="list-disc ml-5 text-gray-700 mb-3">
-                {course.quickFacts.map((fact, i) => (
-                  <li key={i}>{fact}</li>
-                ))}
-              </ul>
-              <h4 className="font-semibold text-rose-500 mb-1">What You’ll Learn</h4>
-              <ul className="list-disc ml-5 text-gray-700 mb-3">
-                {course.learn.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-              {course.practice.length > 0 && (
-                <>
-                  <h4 className="font-semibold text-rose-500 mb-1">Practice & Support</h4>
-                  <ul className="list-disc ml-5 text-gray-700 mb-3">
-                    {course.practice.map((item, i) => (
-                      <li key={i}>{item}</li>
+        {/* Modal Popup */}
+        {modalOpen && selectedCourse && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 relative animate-fade-in overflow-y-auto max-h-[90vh]">
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 text-gray-400 hover:text-rose-500 text-2xl font-bold"
+                aria-label="Close"
+              >
+                &times;
+              </button>
+              <h3 className="font-display text-2xl md:text-3xl font-bold text-gray-900 mb-2 text-center">
+                {selectedCourse.title}
+              </h3>
+              <p className="text-lg text-gray-700 mb-4 font-medium text-center">{selectedCourse.subtitle}</p>
+              {selectedCourse.images && selectedCourse.images.length > 0 && (
+                <div className="flex flex-col gap-2 items-center mb-4">
+                  <div className="relative w-full flex justify-center items-center">
+                    <button
+                      onClick={prevModalImg}
+                      className="absolute left-0 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all"
+                      style={{ top: '50%', transform: 'translateY(-50%)' }}
+                      aria-label="Previous image"
+                    >
+                      <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <img
+                      src={selectedCourse.images[modalImgIndex]}
+                      alt="Course preview"
+                      className="w-64 h-64 rounded-xl object-cover border-2 border-pink-200 mx-auto"
+                    />
+                    <button
+                      onClick={nextModalImg}
+                      className="absolute right-0 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all"
+                      style={{ top: '50%', transform: 'translateY(-50%)' }}
+                      aria-label="Next image"
+                    >
+                      <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                  </div>
+                  <div className="flex gap-1 justify-center mt-2">
+                    {selectedCourse.images.map((_, i: number) => (
+                      <button
+                        key={i}
+                        onClick={() => setModalImgIndex(i)}
+                        className={`w-3 h-3 rounded-full border-2 ${modalImgIndex === i ? 'bg-rose-500 border-rose-500' : 'bg-white border-pink-200'}`}
+                        aria-label={`Go to image ${i + 1}`}
+                      />
                     ))}
-                  </ul>
-                </>
+                  </div>
+                </div>
               )}
-              {course.certification.length > 0 && (
-                <>
-                  <h4 className="font-semibold text-rose-500 mb-1">Certification & Career</h4>
-                  <ul className="list-disc ml-5 text-gray-700 mb-3">
-                    {course.certification.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
-                  </ul>
-                </>
-              )}
-              <div className="mt-4">
-                <span className="inline-block bg-gradient-to-r from-rose-400 to-pink-500 text-white px-4 py-2 rounded-full font-semibold text-sm">
-                  {course.cta}
-                </span>
+              <div className="mb-4">
+                <h4 className="font-semibold text-rose-500 mb-1">Quick Facts</h4>
+                <ul className="list-disc ml-5 text-gray-700 mb-3">
+                  {selectedCourse.quickFacts.map((fact: string, i: number) => (
+                    <li key={i}>{fact}</li>
+                  ))}
+                </ul>
+                <h4 className="font-semibold text-rose-500 mb-1">What You’ll Learn</h4>
+                <ul className="list-disc ml-5 text-gray-700 mb-3">
+                  {selectedCourse.learn.map((item: string, i: number) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+                {selectedCourse.practice.length > 0 && (
+                  <>
+                    <h4 className="font-semibold text-rose-500 mb-1">Practice & Support</h4>
+                    <ul className="list-disc ml-5 text-gray-700 mb-3">
+                      {selectedCourse.practice.map((item: string, i: number) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {selectedCourse.certification.length > 0 && (
+                  <>
+                    <h4 className="font-semibold text-rose-500 mb-1">Certification & Career</h4>
+                    <ul className="list-disc ml-5 text-gray-700 mb-3">
+                      {selectedCourse.certification.map((item: string, i: number) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                <div className="mt-4 text-center">
+                  <span className="inline-block bg-gradient-to-r from-rose-400 to-pink-500 text-white px-4 py-2 rounded-full font-semibold text-sm">
+                    {selectedCourse.cta}
+                  </span>
+                </div>
               </div>
             </div>
-            {hasImages && (
-              <div className="flex flex-col gap-4 items-center w-full">
-                <div className="relative w-full flex justify-center items-center">
-                  <button
-                    onClick={prevImg}
-                    className="absolute left-0 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all"
-                    style={{ top: '50%', transform: 'translateY(-50%)' }}
-                    aria-label="Previous image"
-                  >
-                    <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-                  </button>
-                  <a
-                    href={course.images[imgIndex]}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-64 h-64 rounded-xl overflow-hidden border-2 border-pink-200 hover:border-rose-400 transition-all duration-300 flex-shrink-0"
-                  >
-                    <img
-                      src={course.images[imgIndex]}
-                      alt="Course preview"
-                      className="w-full h-full object-cover bg-gray-100"
-                     
-                    />
-                  </a>
-                  <button
-                    onClick={nextImg}
-                    className="absolute right-0 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all"
-                    style={{ top: '50%', transform: 'translateY(-50%)' }}
-                    aria-label="Next image"
-                  >
-                    <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-                  </button>
-                </div>
-                <div className="flex gap-1 justify-center mt-2">
-                  {course.images.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setImgIndex(i)}
-                      className={`w-3 h-3 rounded-full border-2 ${imgIndex === i ? 'bg-rose-500 border-rose-500' : 'bg-white border-pink-200'}`}
-                      aria-label={`Go to image ${i + 1}`}
-                    />
-                  ))}
-                </div>
-                <span className="text-xs text-gray-400">Click image to view Instagram post</span>
-              </div>
-            )}
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
