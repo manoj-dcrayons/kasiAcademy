@@ -516,7 +516,7 @@ const Courses = () => {
         {/* Modal Popup */}
         {modalOpen && selectedCourse && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 relative animate-fade-in overflow-y-auto max-h-[90vh]">
+            <div className="bg-white md:rounded-2xl md:shadow-2xl max-w-2xl w-full p-6 relative animate-fade-in overflow-y-auto h-screen md:max-h-[90vh]">
               <button
                 onClick={closeModal}
                 className="absolute top-4 right-4 text-gray-400 hover:text-rose-500 text-2xl font-bold"
