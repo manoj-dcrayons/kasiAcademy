@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import course1_1 from '../assets/courses/course1/course1_1.jpg'
 import course1_2 from '../assets/courses/course1/courses1_2.jpg'
 import course1_3 from '../assets/courses/course1/course1_3.jpg'
@@ -31,6 +31,7 @@ import course11_8 from '../assets/courses/course11/8.jpg'
 type Course = {
   title: string;
   subtitle: string;
+  durationDays: number;
   quickFacts: string[];
   learn: string[];
   practice: string[];
@@ -43,6 +44,7 @@ const courses: Course[] = [
   {
     title: '1 Month Professional Makeup Course',
     subtitle: 'Become a professional makeup artist in just 30 days! Master bridal, party, glam, and advanced makeup with expert trainers and hands-on practice.',
+    durationDays: 30,
     quickFacts: [
       'Duration: 1 month (30 days), 5 days/week, 2–3 hours/day',
       'Level: Beginners & aspiring professionals',
@@ -87,6 +89,7 @@ const courses: Course[] = [
   {
     title: '45 Days International Professional Makeup Course',
     subtitle: 'Go global with advanced makeup mastery! Learn international trends, bridal looks, and advanced techniques in just 1.5 months.',
+    durationDays: 45,
     quickFacts: [
       'Duration: 45 days, 5 days/week, 3–4 hours/day',
       'Level: Beginners & aspiring professionals',
@@ -134,6 +137,7 @@ const courses: Course[] = [
   {
     title: '15 Days Professional Hairstyling & Makeup Course',
     subtitle: 'Become a 2-in-1 beauty expert in just 15 days!',
+    durationDays: 15,
     quickFacts: [
       'Duration: 15 days, 5 days/week, 3 hours/day',
       'Level: Beginners & professionals',
@@ -159,6 +163,7 @@ const courses: Course[] = [
   {
     title: '7 Days Professional PMU (Permanent Makeup) Course',
     subtitle: 'Master trending Permanent Makeup — brows, lips, eyeliner!',
+    durationDays: 7,
     quickFacts: [
       'Duration: 7 days, 4–5 hours/day',
       'Level: Beginners & professionals',
@@ -184,6 +189,7 @@ const courses: Course[] = [
   {
     title: '15 Days Professional Nail Art & Extension Course',
     subtitle: 'Become a certified nail artist in just 15 days!',
+    durationDays: 15,
     quickFacts: [
       'Duration: 15 days, 5 days/week, 3 hours/day',
       'Level: Beginners & professionals',
@@ -209,6 +215,7 @@ const courses: Course[] = [
   {
     title: '3 Days Intensive Bridal Makeup Masterclass',
     subtitle: 'Specialize in modern, classic, and reception bridal looks in just 3 days!',
+    durationDays: 3,
     quickFacts: [
       'Duration: 3 days, 4–5 hours/day',
       'Level: Aspiring & pro makeup artists',
@@ -249,6 +256,7 @@ const courses: Course[] = [
   {
     title: 'Salon Management & Entrepreneurship Course',
     subtitle: 'Build & manage a successful salon business in 30 days!',
+    durationDays: 30,
     quickFacts: [
       'Duration: 30 days, 5 days/week, 2–3 hours/day',
       'Level: Owners, managers, aspiring entrepreneurs',
@@ -273,6 +281,7 @@ const courses: Course[] = [
   {
     title: 'Airbrush Makeup Course – Basic to Advance',
     subtitle: 'Master flawless airbrush makeup — basic to editorial in just 7 days!',
+    durationDays: 7,
     quickFacts: [
       'Duration: 7 days, customizable, 3–4 hours/day',
       'Level: Beginners & advanced',
@@ -307,6 +316,7 @@ const courses: Course[] = [
   {
     title: '3 Days Professional Lash Extension Course',
     subtitle: 'Learn classic, hybrid & volume lash extension in 3 days!',
+    durationDays: 3,
     quickFacts: [
       'Duration: 3 days, 4–5 hours/day',
       'Level: Beginners & professionals',
@@ -328,6 +338,7 @@ const courses: Course[] = [
   {
     title: '30 Days Professional Haircut & Chemical Treatment Course',
     subtitle: 'Cut, color, and chemically treat with confidence — full mastery in 30 days!',
+    durationDays: 30,
     quickFacts: [
       'Duration: 30 days, 5 days/week, 3–4 hours/day',
       'Level: Beginners & professionals',
@@ -351,6 +362,7 @@ const courses: Course[] = [
   {
     title: '7 Days Prosthetic & Fantasy Makeup Course',
     subtitle: 'Master high-demand prosthetic and fantasy makeup skills for film, theatre, fashion & events!',
+    durationDays: 7,
     quickFacts: [
       'Duration: 7 days, intensive training, 4–5 hours daily',
       'Level: Beginners & professionals in makeup, film, and creative arts',
@@ -392,71 +404,25 @@ const courses: Course[] = [
 ];
 
 const Courses = () => {
-  const [carouselIndex, setCarouselIndex] = useState(0); // for carousel
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [modalImgIndex, setModalImgIndex] = useState(0);
+  // Categories: show cards (3, 7, 15, 30, 30+)
+  type FilterKey = '3' | '7' | '15' | '30' | '30+';
+  const [selectedCategory, setSelectedCategory] = useState<FilterKey | null>(null);
 
-  // Responsive: 4 on desktop, 2 on tablet, 1 on mobile
-  const getVisibleCount = () => {
-    if (typeof window !== 'undefined') {
-      if (window.innerWidth >= 1024) return 4;
-      if (window.innerWidth >= 640) return 2;
-    }
-    return 1;
-  };
-  const [visibleCount, setVisibleCount] = useState(getVisibleCount());
-  React.useEffect(() => {
-    const handleResize = () => setVisibleCount(getVisibleCount());
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const maxIndex = Math.max(0, courses.length - visibleCount);
-  const handlePrev = () => setCarouselIndex((i) => Math.max(0, i - 1));
-  const handleNext = () => setCarouselIndex((i) => Math.min(maxIndex, i + 1));
-
-  // Clamp carouselIndex if visibleCount changes (e.g., on resize)
-  React.useEffect(() => {
-    setCarouselIndex((i) => Math.min(i, maxIndex));
-  }, [visibleCount, maxIndex]);
-
-  // Calculate translateX so last set is always fully visible
-  const getTranslateX = () => {
-    if (carouselIndex === maxIndex) {
-      return (maxIndex * 100) / visibleCount;
-    }
-    return (carouselIndex * 100) / visibleCount;
+  const getCoursesForCategory = (category: FilterKey) => {
+    if (category === '3') return courses.filter((c) => c.durationDays === 3);
+    if (category === '7') return courses.filter((c) => c.durationDays === 7);
+    if (category === '15') return courses.filter((c) => c.durationDays === 15);
+    if (category === '30') return courses.filter((c) => c.durationDays === 30);
+    return courses.filter((c) => c.durationDays > 30);
   };
 
-  // Auto-slide (autoplay)
-  const [isPaused, setIsPaused] = useState(false);
-  useEffect(() => {
-    if (isPaused) return;
-    let interval: ReturnType<typeof setInterval> | null = setInterval(() => {
-      handleNext();
-    }, 3000);
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isPaused, visibleCount, carouselIndex]);
-
-  const openModal = (course: Course) => {
-    setSelectedCourse(course);
-    setModalImgIndex(0);
+  const openModal = (category: FilterKey) => {
+    setSelectedCategory(category);
     setModalOpen(true);
   };
   const closeModal = () => setModalOpen(false);
 
-  // Modal image navigation
-  const prevModalImg = () => setModalImgIndex((i) => {
-    if (!selectedCourse?.images?.length) return 0;
-    return i === 0 ? selectedCourse.images.length - 1 : i - 1;
-  });
-  const nextModalImg = () => setModalImgIndex((i) => {
-    if (!selectedCourse?.images?.length) return 0;
-    return i === selectedCourse.images.length - 1 ? 0 : i + 1;
-  });
 
   return (
     <section id="courses" className="section-padding bg-white">
@@ -469,54 +435,41 @@ const Courses = () => {
             Explore our professional beauty courses designed for every level. Tap a course to see details!
           </p>
         </div>
-        {/* Carousel */}
-        <div className="relative mb-12">
-          <button
-            onClick={handlePrev}
-            disabled={carouselIndex === 0}
-            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all ${carouselIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-            aria-label="Previous"
-          >
-            <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-          </button>
-          <div className="overflow-hidden pr-[85px]">
-            <div
-              className="flex gap-2 transition-transform duration-500"
-              style={{ transform: `translateX(-${getTranslateX()}%)` }}
-            >
-              {courses.map((course: Course) => (
-                <div
-                  key={course.title}
-                  className="min-w-0 flex-1 max-w-sm bg-white rounded-2xl shadow-lg card-hover cursor-pointer flex flex-col items-center p-6"
-                  style={{ flex: `0 0 calc(100%/${visibleCount})` }}
-                  onClick={() => openModal(course)}
-                >
-                  <div className="w-full h-40 rounded-xl overflow-hidden mb-4 border-2 border-pink-100 flex items-center justify-center bg-gray-50">
-                    {course.images && course.images.length > 0 ? (
-                      <img src={course.images[0]} alt={course.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-300 text-4xl">?</div>
-                    )}
+        {/* Only 4 category cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6 mb-12">
+          {([
+            { key: '3', label: '3 Days', desc: 'Quick masterclasses' },
+            { key: '7', label: '7 Days', desc: 'Short-term intensive courses' },
+            { key: '15', label: '15 Days', desc: 'Two-week pro upskill courses' },
+            { key: '30', label: '30 Days', desc: 'One-month professional courses' },
+            { key: '30+', label: '30+ Days', desc: 'Advanced and extended programs' },
+          ] as { key: FilterKey; label: string; desc: string }[]).map((cat) => {
+            const count = getCoursesForCategory(cat.key).length;
+            return (
+              <div
+                key={cat.key}
+                className="bg-white rounded-2xl shadow-lg card-hover cursor-pointer flex flex-col items-center p-6"
+                onClick={() => openModal(cat.key)}
+              >
+                <div className="w-full h-40 rounded-xl overflow-hidden mb-4 border-2 border-pink-100 flex items-center justify-center bg-gray-50">
+                  <div className="text-center">
+                    <div className="text-4xl font-extrabold text-rose-500">{cat.label}</div>     
                   </div>
-                  <h3 className="font-display text-xl font-bold text-gray-900 text-center mb-2 truncate w-full">{course.title}</h3>
-                  <p className="text-gray-600 text-base text-center line-clamp-2 w-full mb-1">{course.subtitle}</p>
                 </div>
-              ))}
-            </div>
-          </div>
-          <button
-            onClick={handleNext}
-            disabled={carouselIndex === maxIndex}
-            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all ${carouselIndex === maxIndex ? 'opacity-50 cursor-not-allowed' : ''}`}
-            aria-label="Next"
-          >
-            <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-          </button>
+                <h3 className="font-display text-xl font-bold text-gray-900 text-center mb-1">{cat.label} Courses</h3>
+                <div className="text-sm text-gray-500 mt-1">{cat.desc}</div>
+                <div className="mt-2 inline-block bg-rose-50 text-rose-600 px-3 py-1 rounded-full text-xs font-semibold">
+                      {count} course{count !== 1 ? 's' : ''}
+                    </div>
+                <p className="text-gray-600 text-sm text-center pt-2">Tap to view all</p>
+              </div>
+            );
+          })}
         </div>
         {/* Modal Popup */}
-        {modalOpen && selectedCourse && (
+        {modalOpen && selectedCategory && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="bg-white md:rounded-2xl md:shadow-2xl max-w-2xl w-full p-6 relative animate-fade-in overflow-y-auto h-screen md:max-h-[90vh]">
+            <div className="bg-white md:rounded-2xl md:shadow-2xl w-full mx-auto p-6 relative animate-fade-in overflow-y-auto h-screen md:max-h-screen">
               <button
                 onClick={closeModal}
                 className="absolute top-4 right-4 text-gray-400 hover:text-rose-500 text-2xl font-bold"
@@ -524,85 +477,73 @@ const Courses = () => {
               >
                 &times;
               </button>
-              <h3 className="font-display text-2xl md:text-3xl font-bold text-gray-900 mb-2 text-center">
-                {selectedCourse.title}
+              <h3 className="font-display text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">
+                {selectedCategory} Day Courses
               </h3>
-              <p className="text-lg text-gray-700 mb-4 font-medium text-center">{selectedCourse.subtitle}</p>
-              {selectedCourse.images && selectedCourse.images.length > 0 && (
-                <div className="flex flex-col gap-2 items-center mb-4">
-                  <div className="relative w-full flex justify-center items-center">
-                    <button
-                      onClick={prevModalImg}
-                      className="absolute left-0 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all"
-                      style={{ top: '50%', transform: 'translateY(-50%)' }}
-                      aria-label="Previous image"
-                    >
-                      <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <img
-                      src={selectedCourse.images[modalImgIndex]}
-                      alt="Course preview"
-                      className="w-64 h-64 rounded-xl object-cover border-2 border-pink-200 mx-auto"
-                    />
-                    <button
-                      onClick={nextModalImg}
-                      className="absolute right-0 z-10 bg-white/80 hover:bg-rose-100 text-rose-500 rounded-full p-2 shadow-md transition-all"
-                      style={{ top: '50%', transform: 'translateY(-50%)' }}
-                      aria-label="Next image"
-                    >
-                      <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-                    </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {getCoursesForCategory(selectedCategory).map((course) => (
+                  <div key={course.title} className="border border-pink-100 rounded-xl p-4 md:p-5 bg-white h-full">
+                    <div className="flex flex-col gap-4 h-full">
+                      <div>
+                        <div className="w-full h-44 md:h-56 rounded-lg overflow-hidden border-2 border-pink-200 flex items-center justify-center bg-gray-50">
+                          {course.images && course.images.length > 0 ? (
+                            <img src={course.images[0]} alt={course.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300 text-4xl">?</div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1 flex flex-col">
+                        <h4 className="font-display text-xl md:text-2xl font-bold text-gray-900">{course.title}</h4>
+                        <p className="text-gray-700 mb-4 font-medium">{course.subtitle}</p>
+                        <div className="border-t border-pink-100 my-2" />
+                        <div className="grid grid-cols-1 gap-4">
+                          <div>
+                            <h5 className="font-semibold text-rose-500 mb-1">Quick Facts</h5>
+                            <ul className="list-disc ml-5 text-gray-700 mb-3">
+                              {course.quickFacts.map((fact, i) => (
+                                <li key={i}>{fact}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <h5 className="font-semibold text-rose-500 mb-1">What You’ll Learn</h5>
+                            <ul className="list-disc ml-5 text-gray-700 mb-3">
+                              {course.learn.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          {course.practice.length > 0 && (
+                            <div>
+                              <h5 className="font-semibold text-rose-500 mb-1">Practice & Support</h5>
+                              <ul className="list-disc ml-5 text-gray-700 mb-3">
+                                {course.practice.map((item, i) => (
+                                  <li key={i}>{item}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {course.certification.length > 0 && (
+                            <div>
+                              <h5 className="font-semibold text-rose-500 mb-1">Certification & Career</h5>
+                              <ul className="list-disc ml-5 text-gray-700 mb-3">
+                                {course.certification.map((item, i) => (
+                                  <li key={i}>{item}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                        <div className="mt-auto pt-2">
+                          <span className="inline-block bg-gradient-to-r from-rose-400 to-pink-500 text-white w-full text-center px-3 py-2 rounded-full font-semibold text-xs">
+                            {course.cta}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-1 justify-center mt-2">
-                    {selectedCourse.images.map((_, i: number) => (
-                      <button
-                        key={i}
-                        onClick={() => setModalImgIndex(i)}
-                        className={`w-3 h-3 rounded-full border-2 ${modalImgIndex === i ? 'bg-rose-500 border-rose-500' : 'bg-white border-pink-200'}`}
-                        aria-label={`Go to image ${i + 1}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-              <div className="mb-4">
-                <h4 className="font-semibold text-rose-500 mb-1">Quick Facts</h4>
-                <ul className="list-disc ml-5 text-gray-700 mb-3">
-                  {selectedCourse.quickFacts.map((fact: string, i: number) => (
-                    <li key={i}>{fact}</li>
-                  ))}
-                </ul>
-                <h4 className="font-semibold text-rose-500 mb-1">What You’ll Learn</h4>
-                <ul className="list-disc ml-5 text-gray-700 mb-3">
-                  {selectedCourse.learn.map((item: string, i: number) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-                {selectedCourse.practice.length > 0 && (
-                  <>
-                    <h4 className="font-semibold text-rose-500 mb-1">Practice & Support</h4>
-                    <ul className="list-disc ml-5 text-gray-700 mb-3">
-                      {selectedCourse.practice.map((item: string, i: number) => (
-                        <li key={i}>{item}</li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-                {selectedCourse.certification.length > 0 && (
-                  <>
-                    <h4 className="font-semibold text-rose-500 mb-1">Certification & Career</h4>
-                    <ul className="list-disc ml-5 text-gray-700 mb-3">
-                      {selectedCourse.certification.map((item: string, i: number) => (
-                        <li key={i}>{item}</li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-                <div className="mt-4 text-center">
-                  <span className="inline-block bg-gradient-to-r from-rose-400 to-pink-500 text-white px-4 py-2 rounded-full font-semibold text-sm">
-                    {selectedCourse.cta}
-                  </span>
-                </div>
+                ))}
               </div>
             </div>
           </div>
