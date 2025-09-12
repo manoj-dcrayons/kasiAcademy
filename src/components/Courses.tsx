@@ -34,6 +34,11 @@ import course3day from '../assets/courses/course3day/course3day.png'
 import course15day from '../assets/courses/course15day/course15day.jpg'
 import course15day1 from '../assets/courses/course15day/course15day1.jpg'
 import salon from '../assets/courses/course30/salon.jpg'
+import imga1 from  '../assets/bannerCourse/1.jpg'
+import imga2 from  '../assets/bannerCourse/2.png'
+import imga3 from  '../assets/bannerCourse/3.png'
+import imga4 from  '../assets/bannerCourse/4.jpg'
+import imga5 from  '../assets/bannerCourse/5.jpg'
 
 
 type Course = {
@@ -45,8 +50,13 @@ type Course = {
   practice: string[];
   certification: string[];
   cta: string;
-  images: string[]; 
+  images: string[];
 };
+
+
+const imgalist: string[] = [imga1, imga2, imga3, imga4, imga5];
+
+
 
 const courses: Course[] = [
   {
@@ -411,7 +421,7 @@ const Courses = () => {
             { key: '15', label: '15 Days', desc: 'Two-week pro upskill courses' },
             { key: '30', label: '30 Days', desc: 'One-month professional courses' },
             { key: '30+', label: '30+ Days', desc: 'Advanced and extended programs' },
-          ] as { key: FilterKey; label: string; desc: string }[]).map((cat) => {
+          ] as { key: FilterKey; label: string; desc: string }[]).map((cat, index) => {
             const count = getCoursesForCategory(cat.key).length;
             return (
               <div
@@ -420,9 +430,11 @@ const Courses = () => {
                 onClick={() => openModal(cat.key)}
               >
                 <div className="w-full h-40 rounded-xl overflow-hidden mb-4 border-2 border-pink-100 flex items-center justify-center bg-gray-50">
-                  <div className="text-center">
-                    <div className="text-4xl font-extrabold text-rose-500">{cat.label}</div>     
-                  </div>
+                  <img 
+                    className="h-full w-full object-cover" 
+                    src={imgalist[index % imgalist.length]} 
+                    alt={`${cat.label} courses`} 
+                  />
                 </div>
                 <h3 className="font-display text-xl font-bold text-gray-900 text-center mb-1">{cat.label} Courses</h3>
                 <div className="text-sm text-gray-500 mt-1">{cat.desc}</div>
@@ -457,12 +469,12 @@ const Courses = () => {
                     <div className="flex flex-col gap-4 h-full">
                       <div>
                         <div className="w-full h-[300px] rounded-lg overflow-hidden border-2 border-pink-200 flex items-center justify-center bg-gray-50">
-                          {course.images && course.images.length > 0 ? (
-                            <img src={course.images[0]} alt={course.title} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-300 text-4xl">?</div>
-                          )}
-                        </div>
+                    {course.images && course.images.length > 0 ? (
+                      <img src={course.images[0]} alt={course.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-300 text-4xl">?</div>
+                    )}
+                  </div>
                       </div>
                       <div className="flex-1 flex flex-col">
                         <h4 className="font-display text-xl md:text-2xl font-bold text-gray-900">{course.title}</h4>
@@ -517,8 +529,8 @@ const Courses = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                </div>
+              ))}
               </div>
               </div>
             </div>
