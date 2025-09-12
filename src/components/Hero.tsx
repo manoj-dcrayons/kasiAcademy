@@ -29,9 +29,7 @@
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <button className="btn-primary text-xl px-4 py-3">
-                <a href="https://www.instagram.com/kasiacademy"> Explore Portfolio</a>
-              </button>
+              <a href="#courses" className="btn-primary text-xl px-4 py-3">Explore Courses</a>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-white/90">
