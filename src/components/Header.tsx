@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
 import logo from '../assets/logo/logo.png'
 import logo1 from '../assets/logo/logo2.png'
 
@@ -76,7 +76,17 @@ const Header = () => {
                 </a>
               ))}
               <div className="px-4">
-                <a href="https://www.instagram.com/kasiacademy" className="btn-primary w-full inline-block text-center">View Portfolio</a>
+                <button 
+                  onClick={() => {
+                    const coursesSection = document.getElementById('courses');
+                    if (coursesSection) {
+                      coursesSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }} 
+                  className="btn-primary w-full inline-block text-center"
+                >
+                  Explore Courses
+                </button>
               </div>
             </div>
           </div>

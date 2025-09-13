@@ -4,27 +4,27 @@ import { Star, Quote } from 'lucide-react';
 const Testimonials = () => {
   const testimonials = [
     {
-      name: "Sarah Martinez", 
+      name: "Sarah Hamza", 
       role: "Bride",
       company: "Garden Wedding 2023",
-      image: "https://media.istockphoto.com/id/1135381173/photo/portrait-of-a-young-man-outdoors-smiling.jpg?s=612x612&w=0&k=20&c=J8DKGHI8o-oj8cY1CCNpFY2V9OmVVbJuKSO2DdbMvRg=",
-      quote: "Kasi made me feel absolutely stunning on my wedding day. Her attention to detail and ability to enhance my natural beauty was incredible. I felt like the best version of myself.",
+      // image: "https://media.istockphoto.com/id/1135381173/photo/portrait-of-a-young-man-outdoors-smiling.jpg?s=612x612&w=0&k=20&c=J8DKGHI8o-oj8cY1CCNpFY2V9OmVVbJuKSO2DdbMvRg=",
+      quote: "Kasi’s makeup course was amazing! Her attention to detail and the way she teaches techniques really helped me improve. She showed me how to enhance natural beauty, and I truly feel like I’ve become the best version of myself as a makeup artist.",
       rating: 5
     },
     {
       name: "Sana Khan",
       role: "Model",
       company: "Fashion Editorial Shoot",
-      image: "https://images.pexels.com/photos/3992660/pexels-photo-3992660.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-      quote: "Working with Kasi on editorial shoots is always a dream. She understands how makeup translates on camera and creates looks that are both artistic and wearable. True professional.",
+      // image: "https://images.pexels.com/photos/3992660/pexels-photo-3992660.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+      quote: "Learning from Kasi has been a dream! She really understands how makeup works both in real life and on camera. Her lessons are creative yet practical, showing us how to create looks that are artistic but still wearable. She’s a true professional and an inspiring teacher.",
       rating: 5
     },
     {
       name: "Pooja Gupta",
       role: "Event Coordinator",
       company: "Luxury Events Co.",
-      image: "https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-      quote: "I recommend Kasi to all my high-end clients. Her professionalism, punctuality, and incredible talent make her the perfect choice for luxury events and special occasions.",
+      // image: "https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+      quote: "I highly recommend Kasi’s makeup course to anyone serious about learning. Her professionalism, punctuality, and incredible talent make her the perfect teacher for students who want to build skills for luxury events and special occasions.",
       rating: 5
     }
   ];
@@ -52,11 +52,11 @@ const Testimonials = () => {
               <Quote className="absolute top-4 right-4 h-8 w-8 text-rose-300" />
               
               <div className="flex items-center mb-6">
-                <img
+                {/* <img
                   src={testimonial.image}
                   alt={testimonial.name}
                   className="w-16 h-16 rounded-full object-cover mr-4"
-                />
+                /> */}
                 <div>
                   <h3 className="font-semibold text-gray-900 text-lg">
                     {testimonial.name}

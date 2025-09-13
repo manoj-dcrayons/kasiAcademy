@@ -60,7 +60,7 @@ const Contact = () => {
     {
       icon: <Phone className="h-6 w-6" />,
       title: "Phone",
-      details: ["+91 70423 02973", "+91 99712 25655"],
+      details: ["+91 98215 55989", "+91 99712 25655"],
       action: "Call Now"
     },
     {
@@ -113,9 +113,9 @@ const Contact = () => {
                       {detail}
                     </p>
                   ))}
-                  <button className="text-rose-500 font-semibold text-sm hover:text-rose-600 transition-colors mt-2">
+                  {/* <button className="text-rose-500 font-semibold text-sm hover:text-rose-600 transition-colors mt-2">
                     {info.action} →
-                  </button>
+                  </button> */}
                 </div>
               ))}
             </div>
