@@ -5,7 +5,7 @@ import mam from '../assets/images/mam.jpg'
 const About = () => {
   const stats = [
     { icon: <Users className="h-8 w-8" />, number: "500+", label: "Happy Clients" },
-    { icon: <Award className="h-8 w-8" />, number: "50+", label: "Weddings" },
+    { icon: <Award className="h-8 w-8" />, number: "50+", label: "Events" },
     { icon: <Star className="h-8 w-8" />, number: "4.9", label: "Client Rating" },
     { icon: <TrendingUp className="h-8 w-8" />, number: "8+", label: "Years Experience" }
   ];
@@ -20,7 +20,7 @@ const About = () => {
               <span className="gradient-text"> Standards</span>
             </h2>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              I'm Kasi Thompson, a passionate makeup artist with over 8 years of experience creating 
+              I'm Kasi , a passionate makeup artist with over 8 years of experience creating 
               stunning beauty transformations. My journey began with a love for enhancing natural beauty 
               and has evolved into a career working with brides, models, and fashion brands worldwide.
             </p>
