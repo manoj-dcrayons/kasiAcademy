@@ -34,15 +34,20 @@ const Header = () => {
           
           <nav className="hidden md:flex space-x-8">
             {menuItems.map((item) => (
-              <a
+              <button
                 key={item.href}
-                href={item.href}
+                onClick={() => {
+                  const section = document.querySelector(item.href);
+                  if (section) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
                 className={`font-medium transition-colors hover:text-rose-500 ${
                   isScrolled ? 'text-gray-700' : 'text-white'
                 }`}
               >
                 {item.label}
-              </a>
+              </button>
             ))}
           </nav>
           
@@ -66,14 +71,19 @@ const Header = () => {
           <div className="md:hidden bg-white border-t border-gray-200">
             <div className="py-4 space-y-4">
               {menuItems.map((item) => (
-                <a
+                <button
                   key={item.href}
-                  href={item.href}
-                  className="block px-4 py-2 text-gray-700 hover:text-rose-500 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => {
+                    const section = document.querySelector(item.href);
+                    if (section) {
+                      section.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    setIsMenuOpen(false);
+                  }}
+                  className="block px-4 py-2 text-gray-700 hover:text-rose-500 font-medium w-full text-left"
                 >
                   {item.label}
-                </a>
+                </button>
               ))}
               <div className="px-4">
                 <button 
@@ -81,6 +91,7 @@ const Header = () => {
                     const coursesSection = document.getElementById('courses');
                     if (coursesSection) {
                       coursesSection.scrollIntoView({ behavior: 'smooth' });
+                      setIsMenuOpen(false);
                     }
                   }} 
                   className="btn-primary w-full inline-block text-center"

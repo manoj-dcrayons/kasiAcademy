@@ -449,7 +449,7 @@ const Courses = () => {
         {/* Modal Popup */}
         {modalOpen && selectedCategory && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="bg-white md:rounded-2xl md:shadow-2xl w-full mx-auto relative animate-fade-in overflow-y-auto h-screen md:max-h-screen">
+            <div className="bg-white md:rounded-2xl md:shadow-2xl w-full mx-auto relative animate-fade-in overflow-y-auto h-[90vh]  md:h-screen md:max-h-screen">
               <div className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-rose-100 px-6 py-3 flex items-center justify-between">
                 <h3 className="font-display text-xl md:text-2xl font-bold text-gray-900">
                   {selectedCategory} Day Courses
