@@ -12,7 +12,7 @@ const Testimonials = () => {
       rating: 5
     },
     {
-      name: "Emily Chen",
+      name: "Sana Khan",
       role: "Model",
       company: "Fashion Editorial Shoot",
       image: "https://images.pexels.com/photos/3992660/pexels-photo-3992660.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
@@ -20,7 +20,7 @@ const Testimonials = () => {
       rating: 5
     },
     {
-      name: "Jessica Williams",
+      name: "Pooja Gupta",
       role: "Event Coordinator",
       company: "Luxury Events Co.",
       image: "https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
