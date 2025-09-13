@@ -1,30 +1,84 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, Instagram, Facebook, Twitter } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
 
 const Contact = () => {
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitMsg, setSubmitMsg] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setForm(prevForm => ({
+      ...prevForm,
+      [id === 'firstName' ? 'firstName' : 
+       id === 'lastName' ? 'lastName' : 
+       id.toLowerCase()]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setSubmitMsg('');
+
+    try {
+      const { error } = await supabase.from('consultations').insert({
+        first_name: form.firstName,
+        last_name: form.lastName,
+        email: form.email,
+        phone: form.phone,
+        message: form.message
+      });
+
+      if (error) throw error;
+
+      setSubmitMsg('Consultation request submitted successfully!');
+      // Reset form after successful submission
+      setForm({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Error submitting consultation:', error);
+      setSubmitMsg('Failed to submit consultation. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const contactInfo = [
     {
       icon: <Phone className="h-6 w-6" />,
       title: "Phone",
-      details: ["+1 (555) 123-4567", "+1 (555) 765-4321"],
+      details: ["+91 70423 02973", "+91 99712 25655"],
       action: "Call Now"
     },
     {
       icon: <Mail className="h-6 w-6" />,
       title: "Email",
-      details: ["info@kasiacademy.com", "admissions@kasiacademy.com"],
+      details: ["kaveri@kasiacademy.in"],
       action: "Send Email"
     },
     {
       icon: <MapPin className="h-6 w-6" />,
       title: "Location",
-      details: ["123 Beauty Boulevard", "Los Angeles, CA 90210"],
+      details: ["C4, Pocket C1, New Krishna Park, Vikaspuri, New Delhi, Delhi, 110018"],
       action: "Get Directions"
     },
     {
       icon: <Clock className="h-6 w-6" />,
       title: "Hours",
-      details: ["Mon-Fri: 9AM-7PM", "Sat-Sun: 10AM-5PM"],
+      details: ["Mon-Sun: 10AM-10PM"],
       action: "Schedule Visit"
     }
   ];
@@ -71,15 +125,15 @@ const Contact = () => {
                 Follow My Work
               </h3>
               <div className="flex space-x-4 mb-6">
-                <a href="#" className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full text-white hover:shadow-lg transition-all duration-300">
+                <a href="https://www.instagram.com/kasiacademy" className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full text-white hover:shadow-lg transition-all duration-300">
                   <Instagram className="h-6 w-6" />
                 </a>
-                <a href="#" className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full text-white hover:shadow-lg transition-all duration-300">
+                <a href="https://facebook.com/Kasimakeupacademy/" className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full text-white hover:shadow-lg transition-all duration-300">
                   <Facebook className="h-6 w-6" />
                 </a>
-                <a href="#" className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-sky-400 to-sky-500 rounded-full text-white hover:shadow-lg transition-all duration-300">
+                {/* <a href="#" className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-sky-400 to-sky-500 rounded-full text-white hover:shadow-lg transition-all duration-300">
                   <Twitter className="h-6 w-6" />
-                </a>
+                </a> */}
               </div>
               <p className="text-gray-600">
                 Stay updated with my latest work, behind-the-scenes content, and beauty inspiration.
@@ -91,7 +145,7 @@ const Contact = () => {
             <h3 className="font-display text-2xl font-semibold text-gray-900 mb-6">
               Book Your Consultation
             </h3>
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -100,6 +154,8 @@ const Contact = () => {
                   <input
                     type="text"
                     id="firstName"
+                    value={form.firstName}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-colors"
                     placeholder="Your first name"
                   />
@@ -111,6 +167,8 @@ const Contact = () => {
                   <input
                     type="text"
                     id="lastName"
+                    value={form.lastName}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-colors"
                     placeholder="Your last name"
                   />
@@ -124,6 +182,8 @@ const Contact = () => {
                 <input
                   type="email"
                   id="email"
+                  value={form.email}
+                  onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-colors"
                   placeholder="your.email@example.com"
                 />
@@ -136,26 +196,11 @@ const Contact = () => {
                 <input
                   type="tel"
                   id="phone"
+                  value={form.phone}
+                  onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-colors"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+91 12345-67890"
                 />
-              </div>
-              
-              <div>
-                <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-2">
-                  Service Needed
-                </label>
-                <select
-                  id="service"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-colors"
-                >
-                  <option value="">Select an option</option>
-                  <option value="bridal">Bridal Makeup</option>
-                  <option value="editorial">Editorial/Fashion</option>
-                  <option value="events">Special Events</option>
-                  <option value="consultation">Consultation</option>
-                  <option value="other">Other</option>
-                </select>
               </div>
               
               <div>
@@ -165,14 +210,17 @@ const Contact = () => {
                 <textarea
                   id="message"
                   rows={4}
+                  value={form.message}
+                  onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-colors"
                   placeholder="Tell me about your event, vision, or any specific requirements..."
                 ></textarea>
               </div>
               
-              <button type="submit" className="w-full btn-primary">
-                Request Consultation
+              <button type="submit" className="w-full btn-primary" disabled={submitting}>
+                {submitting ? 'Submitting...' : 'Request Consultation'}
               </button>
+              {submitMsg && <p className="text-center text-gray-600 mt-4">{submitMsg}</p>}
             </form>
           </div>
         </div>

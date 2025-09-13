@@ -40,7 +40,7 @@ const About = () => {
           </div>
           
           <div className="relative">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-6">
               <span className="font-display text-2xl font-bold gradient-text">
               Kasi Academy
